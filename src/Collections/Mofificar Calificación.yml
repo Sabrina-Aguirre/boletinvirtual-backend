@@ -1,0 +1,28 @@
+info:
+  name: Mofificar Calificación
+  type: http
+  seq: 1
+
+http:
+  method: PUT
+  url: http://localhost:8080/api/calificacion
+  body:
+    type: json
+    data: |-
+      {
+          "nota": 7,
+          "fecha": "2026-04-10",
+          "alumno": {
+              "id_alumno": 1
+          },
+          "materia": {
+              "id_materia": 1
+          }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

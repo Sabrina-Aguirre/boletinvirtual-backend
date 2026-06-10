@@ -1,0 +1,25 @@
+info:
+  name: Modificar alumno
+  type: http
+  seq: 1
+
+http:
+  method: PUT
+  url: http://localhost:8080/api/alumno
+  body:
+    type: json
+    data: |-
+      {
+          "id_alumno": 1,
+          "nombre": "Lucas",
+          "apellido": "García",
+          "dni": "44123456",
+          "email": "lucas.garcia@gmail.com"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

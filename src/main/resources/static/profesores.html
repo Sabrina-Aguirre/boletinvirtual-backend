@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GradeFlow — Profesores</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0f14;
+      --surface: #16181f;
+      --surface2: #1e2029;
+      --border: #2a2d3a;
+      --accent: #ff6584;
+      --text: #e8e9f0;
+      --text-muted: #7b7e8f;
+      --success: #4ade80;
+      --danger: #f87171;
+      --radius: 12px;
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    nav {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 2rem; display: flex; align-items: center; gap: 2rem;
+      height: 60px; position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; color: #6c63ff; text-decoration: none; }
+    .nav-links { display: flex; gap: 0.25rem; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; font-weight: 500; padding: 0.4rem 0.9rem; border-radius: 8px; transition: all 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--surface2); }
+    .nav-links a.active { color: var(--accent); }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
+    .page-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
+    .page-title span { color: var(--accent); }
+
+    .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.1rem; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #e05070; transform: translateY(-1px); }
+    .btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-edit { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+    .btn-edit:hover { background: var(--accent); color: #fff; }
+    .btn-cancel { background: var(--surface2); color: var(--text-muted); }
+    .btn-cancel:hover { color: var(--text); }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 480px; animation: slideUp 0.2s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; }
+    .modal-footer { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input { width: 100%; padding: 0.65rem 0.9rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem; transition: border-color 0.2s; outline: none; }
+    .form-group input:focus { border-color: var(--accent); }
+
+    .table-wrapper { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .table-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .table-header-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge { background: var(--surface2); color: var(--text-muted); font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 999px; border: 1px solid var(--border); }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    th { padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    td { padding: 0.9rem 1.5rem; font-size: 0.9rem; }
+    .td-id { color: var(--text-muted); font-size: 0.8rem; font-family: monospace; }
+    .td-actions { display: flex; gap: 0.5rem; }
+    .td-name { display: flex; align-items: center; }
+
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: #fff; margin-right: 0.6rem; flex-shrink: 0; }
+
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 300; display: flex; flex-direction: column; gap: 0.5rem; }
+    .toast { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--success); border-radius: 8px; padding: 0.75rem 1.25rem; font-size: 0.875rem; animation: fadeIn 0.2s ease; min-width: 220px; }
+    .toast.error { border-left-color: var(--danger); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+    .empty-state { padding: 3rem; text-align: center; color: var(--text-muted); }
+    .empty-state p { margin-top: 0.5rem; font-size: 0.875rem; }
+
+    .search-input { padding: 0.5rem 0.9rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; outline: none; width: 220px; transition: border-color 0.2s; }
+    .search-input:focus { border-color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-brand">📋 BoletínVirtual</a>
+  <div class="nav-links">
+    <a href="alumnos.html">Alumnos</a>
+    <a href="profesores.html" class="active">Profesores</a>
+    <a href="materias.html">Materias</a>
+    <a href="calificaciones.html">Calificaciones</a>
+    <a href="reporte.html">Reporte</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-header">
+    <h1 class="page-title">Gestión de <span>Profesores</span></h1>
+    <button class="btn btn-primary" onclick="abrirModalCrear()">+ Nuevo profesor</button>
+  </div>
+
+  <div class="table-wrapper">
+    <div class="table-header">
+      <span class="table-header-title">Listado <span id="badge-count" class="badge">0</span></span>
+      <input class="search-input" type="text" placeholder="Buscar profesor..." oninput="filtrar(this.value)" />
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>DNI</th>
+          <th>Email</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-profesores"></tbody>
+    </table>
+    <div id="empty-state" class="empty-state" style="display:none">
+      <strong>Sin profesores</strong>
+      <p>Hacé clic en "Nuevo profesor" para agregar el primero.</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h2 class="modal-title" id="modal-title">Nuevo profesor</h2>
+    <input type="hidden" id="profesor-id" />
+    <div class="form-group">
+      <label>Nombre</label>
+      <input type="text" id="input-nombre" placeholder="Ej: Carlos" />
+    </div>
+    <div class="form-group">
+      <label>Apellido</label>
+      <input type="text" id="input-apellido" placeholder="Ej: Ramírez" />
+    </div>
+    <div class="form-group">
+      <label>DNI</label>
+      <input type="text" id="input-dni" placeholder="Ej: 30123456" />
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="input-email" placeholder="Ej: carlos@gmail.com" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardar()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+  const API = 'http://localhost:8080/api/profesor';
+  let profesores = [];
+
+  async function cargar() {
+    try {
+      const res = await fetch(API);
+      profesores = await res.json();
+      renderTabla(profesores);
+    } catch (e) {
+      toast('No se pudo conectar con el servidor', true);
+    }
+  }
+
+  function renderTabla(data) {
+    const tbody = document.getElementById('tabla-profesores');
+    const empty = document.getElementById('empty-state');
+    document.getElementById('badge-count').textContent = data.length;
+    if (data.length === 0) {
+      tbody.innerHTML = '';
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    tbody.innerHTML = data.map(p => `
+      <tr>
+        <td class="td-id">${p.idProfesor}</td>
+        <td class="td-name">
+          <div class="avatar">${iniciales(p.nombre, p.apellido)}</div>
+          ${p.apellido}, ${p.nombre}
+        </td>
+        <td>${p.dni}</td>
+        <td>${p.email}</td>
+        <td class="td-actions">
+          <button class="btn btn-edit" onclick="abrirModalEditar(${p.idProfesor})">Editar</button>
+          <button class="btn btn-danger" onclick="eliminar(${p.idProfesor})">Eliminar</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function iniciales(nombre, apellido) {
+    return ((nombre?.[0] || '') + (apellido?.[0] || '')).toUpperCase();
+  }
+
+  function filtrar(q) {
+    const filtrado = profesores.filter(p =>
+      `${p.nombre} ${p.apellido} ${p.dni} ${p.email}`.toLowerCase().includes(q.toLowerCase())
+    );
+    renderTabla(filtrado);
+  }
+
+  function abrirModalCrear() {
+    document.getElementById('modal-title').textContent = 'Nuevo profesor';
+    document.getElementById('profesor-id').value = '';
+    document.getElementById('input-nombre').value = '';
+    document.getElementById('input-apellido').value = '';
+    document.getElementById('input-dni').value = '';
+    document.getElementById('input-email').value = '';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function abrirModalEditar(id) {
+    const p = profesores.find(x => x.idProfesor === id);
+    if (!p) return;
+    document.getElementById('modal-title').textContent = 'Editar profesor';
+    document.getElementById('profesor-id').value = p.idProfesor;
+    document.getElementById('input-nombre').value = p.nombre;
+    document.getElementById('input-apellido').value = p.apellido;
+    document.getElementById('input-dni').value = p.dni;
+    document.getElementById('input-email').value = p.email;
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function cerrarModal() {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+
+  async function guardar() {
+    const id = document.getElementById('profesor-id').value;
+    const body = {
+      nombre:   document.getElementById('input-nombre').value.trim(),
+      apellido: document.getElementById('input-apellido').value.trim(),
+      dni:      document.getElementById('input-dni').value.trim(),
+      email:    document.getElementById('input-email').value.trim(),
+    };
+    if (!body.nombre || !body.apellido || !body.dni || !body.email) {
+      toast('Completá todos los campos', true); return;
+    }
+    try {
+      if (id) {
+        body.idProfesor = parseInt(id);
+        await fetch(API, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        toast('Profesor actualizado');
+      } else {
+        await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        toast('Profesor creado');
+      }
+      cerrarModal();
+      cargar();
+    } catch (e) {
+      toast('Error al guardar', true);
+    }
+  }
+
+  async function eliminar(id) {
+    if (!confirm('¿Eliminar este profesor?')) return;
+    try {
+      await fetch(`${API}/${id}`, { method: 'DELETE' });
+      toast('Profesor eliminado');
+      cargar();
+    } catch (e) {
+      toast('Error al eliminar', true);
+    }
+  }
+
+  function toast(msg, error = false) {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = 'toast' + (error ? ' error' : '');
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModal();
+  });
+
+  cargar();
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+info:
+  name: Crear Profesor
+  type: http
+
+http:
+  method: POST
+  url: http://localhost:8080/api/profesor
+  body:
+    type: json
+    data: |-
+      {
+        "apellido": "Miler",
+        "nombre": "Sara",
+        "dni": 30221156,
+        "email":"lucia.vaez@gmail.com"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

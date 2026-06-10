@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BoletínVirtual — Reporte</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0e0f14; --surface: #16181f; --surface2: #1e2029;
+      --border: #2a2d3a; --accent: #4ade80; --text: #e8e9f0;
+      --text-muted: #7b7e8f; --success: #4ade80; --danger: #f87171;
+      --warning: #fbbf24; --radius: 12px;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; gap: 2rem; height: 60px; position: sticky; top: 0; z-index: 100; }
+    .nav-brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.2rem; color: #6c63ff; text-decoration: none; }
+    .nav-links { display: flex; gap: 0.25rem; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; font-weight: 500; padding: 0.4rem 0.9rem; border-radius: 8px; transition: all 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--surface2); }
+    .nav-links a.active { color: var(--accent); }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .page-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
+    .page-title span { color: var(--accent); }
+    .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.65rem 1.4rem; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+    .btn-primary { background: var(--accent); color: #0e0f14; }
+    .btn-primary:hover { background: #22c55e; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-success { background: rgba(74,222,128,0.15); color: var(--success); border: 1px solid rgba(74,222,128,0.3); }
+    .btn-success:hover { background: rgba(74,222,128,0.25); transform: translateY(-1px); }
+    .btn-danger { background: rgba(248,113,113,0.15); color: var(--danger); border: 1px solid rgba(248,113,113,0.3); }
+    .btn-danger:hover { background: rgba(248,113,113,0.25); transform: translateY(-1px); }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; }
+    .stat-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; }
+    .stat-value.green { color: var(--success); }
+    .stat-value.red { color: var(--danger); }
+    .stat-value.purple { color: #a78bfa; }
+    .empty-state { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 4rem 2rem; text-align: center; color: var(--text-muted); }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+    .empty-state p { font-size: 0.875rem; }
+    .table-wrapper { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .table-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .table-header-title { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .badge { background: var(--surface2); color: var(--text-muted); font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 999px; border: 1px solid var(--border); }
+    .search-input { padding: 0.5rem 0.9rem; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; outline: none; width: 220px; transition: border-color 0.2s; }
+    .search-input:focus { border-color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    th { padding: 0.75rem 1.5rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    td { padding: 0.9rem 1.5rem; font-size: 0.9rem; }
+    .estado-chip { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+    .aprobado { background: rgba(74, 222, 128, 0.15); color: var(--success); border: 1px solid rgba(74, 222, 128, 0.3); }
+    .desaprobado { background: rgba(248, 113, 113, 0.15); color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.3); }
+    .promedio-valor { font-weight: 700; font-size: 1rem; }
+    .promedio-alto { color: var(--success); }
+    .promedio-medio { color: var(--warning); }
+    .promedio-bajo { color: var(--danger); }
+    .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .filtro-activo { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .filtro-activo span { color: var(--accent); font-weight: 600; }
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 300; display: flex; flex-direction: column; gap: 0.5rem; }
+    .toast { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--success); border-radius: 8px; padding: 0.75rem 1.25rem; font-size: 0.875rem; animation: fadeIn 0.2s ease; min-width: 220px; }
+    .toast.error { border-left-color: var(--danger); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-brand">📋 BoletínVirtual</a>
+  <div class="nav-links">
+    <a href="alumnos.html">Alumnos</a>
+    <a href="profesores.html">Profesores</a>
+    <a href="materias.html">Materias</a>
+    <a href="calificaciones.html">Calificaciones</a>
+    <a href="reporte.html" class="active">Reporte</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-header">
+    <h1 class="page-title">Reporte de <span>Calificaciones</span></h1>
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btn-generar" onclick="generarReporte('todos')">
+        📊 Todos
+      </button>
+      <button class="btn btn-success" onclick="generarReporte('aprobados')">
+        ✓ Aprobados
+      </button>
+      <button class="btn btn-danger" onclick="generarReporte('desaprobados')">
+        ✗ Desaprobados
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid" id="stats-grid" style="display:none">
+    <div class="stat-card">
+      <div class="stat-label">Total registros</div>
+      <div class="stat-value purple" id="stat-total">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Aprobados</div>
+      <div class="stat-value green" id="stat-aprobados">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Desaprobados</div>
+      <div class="stat-value red" id="stat-desaprobados">0</div>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div class="empty-state" id="empty-state">
+    <div class="icon">📋</div>
+    <h3>Reporte no generado</h3>
+    <p>Hacé clic en uno de los botones para ver el reporte.</p>
+  </div>
+
+  <!-- FILTRO ACTIVO -->
+  <div class="filtro-activo" id="filtro-activo" style="display:none">
+    Mostrando: <span id="filtro-label">Todos</span>
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-wrapper" id="tabla-wrapper" style="display:none">
+    <div class="table-header">
+      <span class="table-header-title">Resultados <span id="badge-count" class="badge">0</span></span>
+      <input class="search-input" type="text" placeholder="Buscar alumno o materia..." oninput="filtrar(this.value)" />
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Alumno</th>
+          <th>Materia</th>
+          <th>Promedio</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-reporte"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+  const API_BASE = 'http://localhost:8080/api/reporte';
+  let datos = [];
+
+  async function generarReporte(tipo) {
+    const btn = document.getElementById('btn-generar');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Generando...';
+
+    const urls = {
+      todos:        `${API_BASE}/alumnos`,
+      aprobados:    `${API_BASE}/aprobados`,
+      desaprobados: `${API_BASE}/desaprobados`
+    };
+
+    const labels = {
+      todos: 'Todos',
+      aprobados: 'Solo aprobados',
+      desaprobados: 'Solo desaprobados'
+    };
+
+    try {
+      const res = await fetch(urls[tipo]);
+      datos = await res.json();
+      renderTabla(datos);
+      actualizarStats(datos);
+      document.getElementById('empty-state').style.display = 'none';
+      document.getElementById('tabla-wrapper').style.display = 'block';
+      document.getElementById('stats-grid').style.display = 'grid';
+      document.getElementById('filtro-activo').style.display = 'block';
+      document.getElementById('filtro-label').textContent = labels[tipo];
+      toast(`Reporte generado — ${datos.length} registros`);
+    } catch (e) {
+      toast('No se pudo conectar con el servidor', true);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '📊 Todos';
+    }
+  }
+
+  function renderTabla(data) {
+    const tbody = document.getElementById('tabla-reporte');
+    document.getElementById('badge-count').textContent = data.length;
+
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 2rem">Sin datos para mostrar</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = data.map(r => `
+      <tr>
+        <td><strong>${r.apellidoAlumno}</strong>, ${r.nombreAlumno}</td>
+        <td>${r.materia}</td>
+        <td><span class="promedio-valor ${colorPromedio(r.promedio)}">${r.promedio.toFixed(2)}</span></td>
+        <td>
+          <span class="estado-chip ${r.aprobado ? 'aprobado' : 'desaprobado'}">
+            ${r.aprobado ? '✓ Aprobado' : '✗ Desaprobado'}
+          </span>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function colorPromedio(promedio) {
+    if (promedio >= 7) return 'promedio-alto';
+    if (promedio >= 6) return 'promedio-medio';
+    return 'promedio-bajo';
+  }
+
+  function actualizarStats(data) {
+    document.getElementById('stat-total').textContent = data.length;
+    const aprobados = data.filter(r => r.aprobado).length;
+    document.getElementById('stat-aprobados').textContent = aprobados;
+    document.getElementById('stat-desaprobados').textContent = data.length - aprobados;
+  }
+
+  function filtrar(q) {
+    const filtrado = datos.filter(r =>
+      `${r.nombreAlumno} ${r.apellidoAlumno} ${r.materia}`.toLowerCase().includes(q.toLowerCase())
+    );
+    renderTabla(filtrado);
+    document.getElementById('badge-count').textContent = filtrado.length;
+  }
+
+  function toast(msg, error = false) {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = 'toast' + (error ? ' error' : '');
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+</script>
+</body>
+</html>

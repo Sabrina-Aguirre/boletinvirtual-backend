@@ -1,0 +1,24 @@
+info:
+  name: Crear Materia
+  type: http
+
+http:
+  method: POST
+  url: http://localhost:8080/api/materia
+  body:
+    type: json
+    data: |-
+      {
+          "nombre": "Laboratorio de Software",
+          "codigo": 101,
+          "profesor": {
+              "id_profesor": 6
+          }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
